@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "170628657771",
+    "project_id": "dart-auth-f8e61",
+    "storage_bucket": "dart-auth-f8e61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170628657771:android:623e57462b0f307b83f72e",
+        "android_client_info": {
+          "package_name": "com.example.basecode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170628657771-btp8v639j91q3tp8gqf1vfqvct5up9ak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO2jpTilOTN3PWW93ebzP928qy7AqEqPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170628657771-btp8v639j91q3tp8gqf1vfqvct5up9ak.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

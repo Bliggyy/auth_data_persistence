@@ -7,7 +7,7 @@ class SecondaryButton extends StatelessWidget {
   SecondaryButton({@required this.text, @required this.onPress});
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
+    return TextButton(
       onPressed: onPress,
       child: Text(text),
     );

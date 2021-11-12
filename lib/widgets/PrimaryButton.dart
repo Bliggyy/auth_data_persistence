@@ -15,7 +15,7 @@ class PrimaryButton extends StatelessWidget {
       ),
       minWidth: double.maxFinite,
       height: 50,
-      child: RaisedButton(
+      child: ElevatedButton(
         onPressed: onPress,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -30,8 +30,6 @@ class PrimaryButton extends StatelessWidget {
             ),
           ],
         ),
-        elevation: 8.0,
-        color: Theme.of(context).primaryColor,
       ),
     );
   }
