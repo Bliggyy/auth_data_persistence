@@ -2,6 +2,7 @@ import 'package:basecode/screens/DashboardScreen.dart';
 import 'package:basecode/screens/LoginScreen.dart';
 import 'package:basecode/services/LocalStorageService.dart';
 import 'package:basecode/widgets/CustomTextFormField.dart';
+import 'package:basecode/widgets/ErrorAlert.dart';
 import 'package:basecode/widgets/PasswordField.dart';
 import 'package:basecode/widgets/PrimaryButton.dart';
 import 'package:basecode/widgets/SecondaryButton.dart';
@@ -135,47 +136,57 @@ class RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   register() async {
-    if (pass.text == rpass.text) {
-      try {
-        print(email.text);
-        setState(() {
-          isLogginIn = true;
-        });
-        var userCredential = await auth.createUserWithEmailAndPassword(
-          email: email.text,
-          password: pass.text,
-        );
-
-        LocalStorageService.setName(userCredential.user.displayName);
-        LocalStorageService.setUid(userCredential.user.uid);
-
-        Get.offNamed(DashboardScreen.routeName);
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          AlertDialog(
-            title: Text('Error'),
-            content: Text('Your password is less than 6 characters.'),
+    if (email.text.isNotEmpty &&
+        pass.text.isNotEmpty &&
+        fname.text.isNotEmpty &&
+        lname.text.isNotEmpty &&
+        rpass.text.isNotEmpty) {
+      if (pass.text == rpass.text) {
+        try {
+          setState(() {
+            isLogginIn = true;
+          });
+          var userCredential = await auth.createUserWithEmailAndPassword(
+            email: email.text,
+            password: pass.text,
           );
-          print('The password provided is too weak.');
-        } else if (e.code == 'email-already-in-use') {
-          AlertDialog(
-            title: Text('Error'),
-            content: Text('The account already exists for that email.'),
-          );
-          print('The account already exists for that email.');
+
+          LocalStorageService.setName(userCredential.user.displayName);
+          LocalStorageService.setUid(userCredential.user.uid);
+
+          Get.offNamed(DashboardScreen.routeName);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            showDialog(
+                context: context,
+                builder: (context) => ErrorAlert(
+                    content: 'Your password is less than 6 characters.'));
+            print('The password provided is too weak.');
+          } else if (e.code == 'email-already-in-use') {
+            showDialog(
+                context: context,
+                builder: (context) => ErrorAlert(
+                    content: 'The account already exists for that email.'));
+            print('The account already exists for that email.');
+          }
+        } catch (e) {
+          print(e);
         }
-      } catch (e) {
-        print(e);
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => ErrorAlert(
+                content:
+                    'Your password and confirm password should match. Please try again.'));
       }
+      setState(() {
+        isLogginIn = false;
+      });
     } else {
-      AlertDialog(
-        title: Text("Error: Passwords don't match"),
-        content: Text(
-            "Your password and confirm password should match. Please try again"),
-      );
+      showDialog(
+          context: context,
+          builder: (context) =>
+              ErrorAlert(content: 'Please fill out all fields.'));
     }
-    setState(() {
-      isLogginIn = false;
-    });
   }
 }

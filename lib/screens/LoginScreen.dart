@@ -3,6 +3,7 @@ import 'package:basecode/screens/ForgotPasswordScreen.dart';
 import 'package:basecode/screens/RegistrationScreen.dart';
 import 'package:basecode/services/AuthService.dart';
 import 'package:basecode/services/LocalStorageService.dart';
+import 'package:basecode/widgets/ErrorAlert.dart';
 import 'package:basecode/widgets/SecondaryButton.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -113,12 +114,15 @@ class LoginScreenState extends State<LoginScreen> {
 
   loginWithEmail() async {
     try {
-      setState(() {
-        isLogginIn = true;
-      });
       if (email.text.isEmpty || pass.text.isEmpty) {
-        _emptyFieldAlert(context);
+        showDialog(
+            context: context,
+            builder: (context) =>
+                ErrorAlert(content: 'Please input email or password.'));
       } else {
+        setState(() {
+          isLogginIn = true;
+        });
         var userCredential = await auth.signInWithEmailAndPassword(
             email: email.text, password: pass.text);
 
@@ -129,15 +133,20 @@ class LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        _noUserAlert(context);
+        showDialog(
+            context: context,
+            builder: (context) => ErrorAlert(content: 'User does not exist.'));
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        _wrongPassAlert(context);
+        showDialog(
+            context: context,
+            builder: (context) =>
+                ErrorAlert(content: 'Wrong password provided for that user.'));
         print('Wrong password provided for that user.');
       }
     }
     setState(() {
-      isLogginIn = true;
+      isLogginIn = false;
     });
   }
 
@@ -163,32 +172,5 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLogginIn = false;
     });
-  }
-
-  _emptyFieldAlert(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('Error'),
-              content: Text('Please input email or password'),
-            ));
-  }
-
-  _wrongPassAlert(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('Error'),
-              content: Text('Wrong password provided for that user.'),
-            ));
-  }
-
-  _noUserAlert(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('Error'),
-              content: Text('User does not exist.'),
-            ));
   }
 }
