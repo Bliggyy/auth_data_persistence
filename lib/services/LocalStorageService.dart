@@ -4,7 +4,7 @@ class LocalStorageService {
   static SharedPreferences _preferences;
   static const String _usernameKey = "username";
   static const String _uidKey = "uid";
-  static const String _emailKey = "email";
+  static const String _refreshTokenKey = "refreshToken";
 
   static Future initialize() async =>
       _preferences = await SharedPreferences.getInstance();
@@ -13,22 +13,21 @@ class LocalStorageService {
       await _preferences.setString(_usernameKey, username);
   static Future setUid(String uid) async =>
       await _preferences.setString(_uidKey, uid);
-  static Future setEmail(String email) async =>
-      await _preferences.setString(_emailKey, email);
+  static Future setRefreshToken(String refreshToken) async =>
+      await _preferences.setString(_refreshTokenKey, refreshToken);
 
   static String getName() => _preferences.getString(_usernameKey);
   static String getUid() => _preferences.getString(_uidKey);
-  static String getEmail() => _preferences.getString(_emailKey);
+  static String getRefreshToken() => _preferences.getString(_refreshTokenKey);
 
   static bool isUserLoggedIn() {
     String username = getName() ?? "";
     String uid = getUid() ?? "";
-    String email = getEmail() ?? "";
+    //String refreshToken = getRefreshToken() ?? "";
 
-    if ((username != "" || email != "") && uid != "") {
+    if (username != "" && uid != "") {
       return true;
     }
-
     return false;
   }
 }

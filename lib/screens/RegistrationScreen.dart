@@ -1,12 +1,13 @@
 import 'package:basecode/screens/DashboardScreen.dart';
 import 'package:basecode/screens/LoginScreen.dart';
+import 'package:basecode/services/DatabaseService.dart';
 import 'package:basecode/services/LocalStorageService.dart';
 import 'package:basecode/widgets/CustomTextFormField.dart';
 import 'package:basecode/widgets/ErrorAlert.dart';
 import 'package:basecode/widgets/PasswordField.dart';
 import 'package:basecode/widgets/PrimaryButton.dart';
 import 'package:basecode/widgets/SecondaryButton.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:basecode/models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,9 @@ class RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController email = TextEditingController();
   final TextEditingController pass = TextEditingController();
   final TextEditingController rpass = TextEditingController();
-  FirebaseAuth auth = FirebaseAuth.instance;
+
+  DatabaseService _databaseService = DatabaseService();
+  //FirebaseAuth auth = FirebaseAuth.instance;
   bool isLogginIn = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -146,28 +149,16 @@ class RegistrationScreenState extends State<RegistrationScreen> {
           setState(() {
             isLogginIn = true;
           });
-          var userCredential = await auth.createUserWithEmailAndPassword(
-            email: email.text,
-            password: pass.text,
-          );
+          var user = User(fname.text, lname.text, email.text, pass.text);
 
-          LocalStorageService.setName(userCredential.user.displayName);
-          LocalStorageService.setUid(userCredential.user.uid);
+          var results = await _databaseService.registerUser(user, context);
 
-          Get.offNamed(DashboardScreen.routeName);
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'weak-password') {
-            showDialog(
-                context: context,
-                builder: (context) => ErrorAlert(
-                    content: 'Your password is less than 6 characters.'));
-            print('The password provided is too weak.');
-          } else if (e.code == 'email-already-in-use') {
-            showDialog(
-                context: context,
-                builder: (context) => ErrorAlert(
-                    content: 'The account already exists for that email.'));
-            print('The account already exists for that email.');
+          if (results != null) {
+            LocalStorageService.setName(results.user.email);
+            LocalStorageService.setUid(results.user.uid);
+            LocalStorageService.setRefreshToken(results.user.refreshToken);
+
+            Get.offNamed(DashboardScreen.routeName);
           }
         } catch (e) {
           print(e);

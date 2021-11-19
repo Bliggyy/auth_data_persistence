@@ -24,6 +24,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               await authService.logout();
               LocalStorageService.setName("");
               LocalStorageService.setUid("");
+              LocalStorageService.setRefreshToken("");
               Get.offAllNamed(LoginScreen.routeName);
             },
             child: Text("Logout"),

@@ -123,27 +123,25 @@ class LoginScreenState extends State<LoginScreen> {
         setState(() {
           isLogginIn = true;
         });
-        var userCredential = await auth.signInWithEmailAndPassword(
-            email: email.text, password: pass.text);
+        var userCredential = await authService.signInWithEmailAndPassword(
+            email.text, pass.text, context);
+
+        if (userCredential == null) {
+          setState(() {
+            isLogginIn = false;
+          });
+          print("Invalid user crendtials");
+          return;
+        }
 
         LocalStorageService.setName(userCredential.user.email);
         LocalStorageService.setUid(userCredential.user.uid);
+        LocalStorageService.setRefreshToken(userCredential.user.refreshToken);
 
         Get.offNamed(DashboardScreen.routeName);
       }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        showDialog(
-            context: context,
-            builder: (context) => ErrorAlert(content: 'User does not exist.'));
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        showDialog(
-            context: context,
-            builder: (context) =>
-                ErrorAlert(content: 'Wrong password provided for that user.'));
-        print('Wrong password provided for that user.');
-      }
+    } catch (e) {
+      print(e);
     }
     setState(() {
       isLogginIn = false;
@@ -164,6 +162,7 @@ class LoginScreenState extends State<LoginScreen> {
 
       LocalStorageService.setName(user.user.displayName);
       LocalStorageService.setUid(user.user.uid);
+      LocalStorageService.setRefreshToken(user.user.refreshToken);
 
       Get.offNamed(DashboardScreen.routeName);
     } catch (e) {
